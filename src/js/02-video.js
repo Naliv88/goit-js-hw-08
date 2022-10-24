@@ -1,34 +1,15 @@
 
 import Player from '@vimeo/player';
-
+import throttle from 'lodash.throttle';
 
 const iframe = document.querySelector('#vimeo-player');
 
-const options = {
-    width: 640,
-    muted: true,
+const player = new Player(iframe);
+
+player.on('timeupdate', throttle(readTime, 1000));
+
+function readTime({ seconds }) {
+  localStorage.setItem('videoplayer-current-time', seconds);
 }
-const player = new Player(iframe, options);
 
-    player.on('play', function() {
-        console.log('played the video!');
-    });
-
-    // const onPlay = function(data) {
-    // // data is an object containing properties specific to that event
-    // };
-
-    // player.on('play', onPlay);
-
-    // // If later on you decide that you don’t need to listen for play anymore.
-    player.pause('play', function() {
-        console.log('stop the video!');
-    });
-    
-
-    player.getVideoTitle().then(function(title) {
-        console.log('title:', title);
-    });
-
-console.log(iframe);
-console.log(player);
+player.setCurrentTime(localStorage.getItem('videoplayer-current-time'));
